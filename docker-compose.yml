@@ -1,0 +1,115 @@
+version: "3.9"
+
+services:
+  # ─────────────────────────────────────────
+  # PostgreSQL Database
+  # ─────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: ai_platform_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ai_platform}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres_init/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ai_network
+
+  # ─────────────────────────────────────────
+  # Django Auth & Admin Engine
+  # ─────────────────────────────────────────
+  django:
+    build:
+      context: ./django_auth
+      dockerfile: Dockerfile
+    container_name: ai_platform_django
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-your-super-secret-key-change-me}
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
+      - POSTGRES_DB=${POSTGRES_DB:-ai_platform}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme123}
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - FASTAPI_BASE_URL=http://fastapi:8001
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-jwt-secret-key-change-me}
+      - JWT_ALGORITHM=HS256
+      - JWT_EXPIRY_HOURS=24
+    volumes:
+      - django_static:/app/staticfiles
+      - django_media:/app/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ai_network
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+
+  # ─────────────────────────────────────────
+  # FastAPI AI Processing Engine
+  # ─────────────────────────────────────────
+  fastapi:
+    build:
+      context: ./fastapi_processor
+      dockerfile: Dockerfile
+    container_name: ai_platform_fastapi
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-ai_platform}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme123}
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-jwt-secret-key-change-me}
+      - JWT_ALGORITHM=HS256
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-sk-your-openai-key-here}
+      - AI_MODEL=${AI_MODEL:-gpt-3.5-turbo}
+      - MAX_FILE_SIZE_MB=${MAX_FILE_SIZE_MB:-10}
+      - DJANGO_BASE_URL=http://django:8000
+    volumes:
+      - fastapi_uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ai_network
+    command: uvicorn main:app --host 0.0.0.0 --port 8001 --workers 2
+
+  # ─────────────────────────────────────────
+  # Nginx Reverse Proxy (Traffic Cop)
+  # ─────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: ai_platform_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - django_static:/static:ro
+    depends_on:
+      - django
+      - fastapi
+    networks:
+      - ai_network
+
+volumes:
+  postgres_data:
+  django_static:
+  django_media:
+  fastapi_uploads:
+
+networks:
+  ai_network:
+    driver: bridge
