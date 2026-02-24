@@ -1,10 +1,10 @@
-# 🤖 AI-Powered Scalable Task & File Processing Platform
+# AI-Powered Scalable Task & File Processing Platform
 
 > A production-grade, dual-engine Python platform that lets users upload documents and receive AI-generated analysis — with live WebSocket notifications, JWT authentication, Django admin, and full Docker orchestration.
 
 ---
 
-## 🎯 Objective & Goal
+## Objective & Goal
 
 **The Problem:** Processing large files with AI (summarization, sentiment analysis, keyword extraction) takes 5–30 seconds. A naive implementation would block the HTTP response thread, creating poor user experience and scalability issues.
 
@@ -14,11 +14,11 @@
 3. Pushes a WebSocket notification the moment processing completes
 4. Stores all results in PostgreSQL for future retrieval
 
-**End Result:** Users get a near-instant response and a real-time "✅ Processing Complete" ping — with zero polling required.
+**End Result:** Users get a near-instant response and a real-time "Processing Complete" ping — with zero polling required.
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -62,7 +62,7 @@
 
 ---
 
-## 🔄 System Flow (Step-by-Step)
+## System Flow (Step-by-Step)
 
 ### Step 1 — User Registers & Logs In
 ```
@@ -104,7 +104,7 @@ WebSocket /process/ws/{user_id}?token=<JWT>
 
 ---
 
-## 🛠️ Technologies Used
+##  Technologies Used
 
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
@@ -124,7 +124,7 @@ WebSocket /process/ws/{user_id}?token=<JWT>
 
 ---
 
-## 🔄 Alternatives & Integrations
+##  Alternatives & Integrations
 
 ### Alternative AI Providers
 | Provider | Integration | Notes |
@@ -169,7 +169,7 @@ const { task_id } = await fetch('/auth/files/submit/', {
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 - Docker Desktop (or Docker + Docker Compose)
@@ -220,7 +220,7 @@ docker compose exec django python manage.py createsuperuser
 
 ---
 
-## 📡 API Reference
+##  API Reference
 
 ### Authentication (Django — `/auth/`)
 
@@ -253,9 +253,9 @@ docker compose exec django python manage.py createsuperuser
 
 ---
 
-## 🔧 What You Need to Change / Replace
+##  What You Need to Change / Replace
 
-### ⚠️ REQUIRED Before Deployment
+###  REQUIRED Before Deployment
 
 | File | Variable | What to Replace |
 |------|----------|-----------------|
@@ -264,7 +264,7 @@ docker compose exec django python manage.py createsuperuser
 | `.env` | `JWT_SECRET_KEY` | Different random string |
 | `.env` | `POSTGRES_PASSWORD` | Strong database password |
 
-### 🔧 Optional Customizations
+### Optional Customizations
 
 | File | Change | Why |
 |------|--------|-----|
@@ -276,7 +276,7 @@ docker compose exec django python manage.py createsuperuser
 
 ---
 
-## ☁️ Deployment Guide
+## Deployment Guide
 
 ### Option 1: Deploy on a VPS (DigitalOcean / AWS EC2 / Hetzner)
 
@@ -416,12 +416,5 @@ curl http://localhost/process/tasks/YOUR_TASK_ID \
   -H "Authorization: Bearer $TOKEN"
 ```
 
----
 
-## 📝 License
-
-MIT License — free to use, modify, and deploy.
-
----
-
-*Built with ❤️ using Django, FastAPI, PostgreSQL, OpenAI, and Docker.*
+*Built with using Django, FastAPI, PostgreSQL, OpenAI, and Docker.*
