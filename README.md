@@ -276,9 +276,9 @@ docker compose exec django python manage.py createsuperuser
 
 ---
 
-## Deployment Guide
+## Deployment 
 
-### Option 1: Deploy on a VPS (DigitalOcean / AWS EC2 / Hetzner)
+### Option 1: Deploy on AWS EC2 
 
 ```bash
 # 1. SSH into your server
@@ -339,7 +339,7 @@ ai-platform/
 ├── postgres_init/
 │   └── init.sql                # DB schema initialization
 │
-├── django_auth/                # 🐍 Engine 1: Auth & Admin
+├── django_auth/                # Engine 1: Auth & Admin
 │   ├── Dockerfile
 │   ├── requirements.txt
 │   ├── manage.py
@@ -357,11 +357,11 @@ ai-platform/
 │           ├── views.py
 │           └── urls.py
 │
-└── fastapi_processor/          # ⚡ Engine 2: AI Processing
+└── fastapi_processor/          # AI Processing
     ├── Dockerfile
     ├── requirements.txt
     ├── main.py                 # FastAPI app + Swagger docs
-    ├── config.py               # Settings via env vars
+    ├── config.py               # Settings via env 
     ├── database.py             # Async SQLAlchemy + ORM models
     ├── auth.py                 # JWT validation middleware
     ├── websocket_manager.py    # Live alert broadcast system
@@ -370,7 +370,7 @@ ai-platform/
     ├── services/
     │   └── ai_service.py       # OpenAI + file parsing logic
     └── models/
-        └── schemas.py          # Pydantic request/response models
+        └── schemas.py          # request/response models
 ```
 
 ---
