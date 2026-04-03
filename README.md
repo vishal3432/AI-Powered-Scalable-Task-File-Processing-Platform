@@ -124,50 +124,6 @@ WebSocket /process/ws/{user_id}?token=<JWT>
 
 ---
 
-##  Alternatives & Integrations
-
-### Alternative AI Providers
-| Provider | Integration | Notes |
-|----------|-------------|-------|
-| **Anthropic Claude** | `pip install anthropic` | Replace `openai` calls in `ai_service.py` |
-| **Google Gemini** | `pip install google-generativeai` | Alternative to OpenAI |
-| **Azure OpenAI** | `openai` SDK with `api_base` | Enterprise option |
-| **Local LLM (Ollama)** | `ollama` + REST | Free, private, no API key needed |
-| **Hugging Face** | `transformers` | Open-source models |
-
-### Alternative Task Queues
-| Queue | When to Use |
-|-------|-------------|
-| **Celery + Redis** | High volume (1000s of tasks/min), distributed workers |
-| **FastAPI BackgroundTasks** *(current)* | Low-to-medium volume, simplicity |
-| **ARQ** | Redis-backed, async-native replacement for Celery |
-| **RQ (Redis Queue)** | Simple, Redis-backed, easy to scale |
-
-### Frontend Integration
-Connect any frontend via:
-```javascript
-// 1. Login
-const { access } = await fetch('/auth/login/', { method:'POST', body: credentials })
-
-// 2. Connect WebSocket for live updates
-const ws = new WebSocket(`ws://your-host/process/ws/${userId}?token=${access}`)
-ws.onmessage = (e) => {
-  const msg = JSON.parse(e.data)
-  if (msg.event === 'task_completed') showResult(msg.task_id)
-}
-
-// 3. Submit file
-const formData = new FormData()
-formData.append('file', file)
-formData.append('task_type', 'summarize')
-const { task_id } = await fetch('/auth/files/submit/', {
-  method: 'POST',
-  headers: { Authorization: `Bearer ${access}` },
-  body: formData
-})
-```
-
----
 
 ##  Quick Start
 
@@ -253,28 +209,6 @@ docker compose exec django python manage.py createsuperuser
 
 ---
 
-##  What You Need to Change / Replace
-
-###  REQUIRED Before Deployment
-
-| File | Variable | What to Replace |
-|------|----------|-----------------|
-| `.env` | `OPENAI_API_KEY` | Your real OpenAI API key from platform.openai.com |
-| `.env` | `DJANGO_SECRET_KEY` | Random 50+ char string |
-| `.env` | `JWT_SECRET_KEY` | Different random string |
-| `.env` | `POSTGRES_PASSWORD` | Strong database password |
-
-### Optional Customizations
-
-| File | Change | Why |
-|------|--------|-----|
-| `fastapi_processor/services/ai_service.py` | Replace OpenAI client with Anthropic/Gemini | Use different AI provider |
-| `.env` → `AI_MODEL` | `gpt-4` or `gpt-4-turbo` | Use more powerful (but expensive) model |
-| `fastapi_processor/services/ai_service.py` → `TASK_PROMPTS` | Edit prompt templates | Customize AI behavior |
-| `.env` → `MAX_FILE_SIZE_MB` | Increase limit | Allow larger files |
-| `nginx/nginx.conf` | Add SSL config | HTTPS in production |
-
----
 
 ## Deployment 
 
@@ -390,31 +324,6 @@ ai-platform/
 
 ---
 
-## 🧪 Testing the Platform
-
-### Quick Test with curl
-```bash
-# 1. Register
-curl -X POST http://localhost/auth/register/ \
-  -H "Content-Type: application/json" \
-  -d '{"username":"testuser","email":"test@example.com","password":"testpass123","password2":"testpass123"}'
-
-# 2. Login (save the access token)
-TOKEN=$(curl -s -X POST http://localhost/auth/login/ \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"testpass123"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['access'])")
-
-# 3. Submit a file
-echo "The quick brown fox jumps over the lazy dog. This is a test document." > test.txt
-curl -X POST http://localhost/auth/files/submit/ \
-  -H "Authorization: Bearer $TOKEN" \
-  -F "file=@test.txt" \
-  -F "task_type=summarize"
-
-# 4. Check task status (use task_id from previous response)
-curl http://localhost/process/tasks/YOUR_TASK_ID \
-  -H "Authorization: Bearer $TOKEN"
-```
 
 
 *Built with using Django, FastAPI, PostgreSQL, OpenAI, and Docker.*
