@@ -1,15 +1,9 @@
 services:
 
-# ─────────────────────────────────────────
-
-# Django Authentication Service
-
-# ─────────────────────────────────────────
-
 * type: web
   name: django-auth-service
-  plan: standard
   runtime: docker
+  plan: standard
   repo: YOUR_GITHUB_REPO_URL
   rootDir: django_auth
   dockerfilePath: Dockerfile
@@ -56,29 +50,18 @@ services:
   * key: FASTAPI_BASE_URL
     value: "https://fastapi-processor-service.onrender.com"
 
-  * key: CORS_ALLOWED_ORIGINS
-    value: "https://YOUR_FRONTEND_DOMAIN.com,https://*.onrender.com"
-
   healthCheckPath: /auth/health/
 
   buildCommand: |
   pip install -r requirements.txt
   python manage.py collectstatic --noinput
 
-  startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 60
-
-  initialDeployHook: python manage.py migrate --noinput
-
-# ─────────────────────────────────────────
-
-# FastAPI Processing Service
-
-# ─────────────────────────────────────────
+  startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:8000
 
 * type: web
   name: fastapi-processor-service
-  plan: standard
   runtime: docker
+  plan: standard
   repo: YOUR_GITHUB_REPO_URL
   rootDir: fastapi_processor
   dockerfilePath: Dockerfile
@@ -119,29 +102,10 @@ services:
   * key: DJANGO_BASE_URL
     value: "https://django-auth-service.onrender.com"
 
-  * key: CORS_ALLOWED_ORIGINS
-    value: "https://YOUR_FRONTEND_DOMAIN.com,https://django-auth-service.onrender.com"
-
-  * key: AI_MODEL
-    value: "gpt-3.5-turbo"
-
-  * key: MAX_FILE_SIZE_MB
-    value: "10"
-
-  * key: ENV
-    value: "production"
-
   healthCheckPath: /health
 
   buildCommand: pip install -r requirements.txt
-
-  startCommand: uvicorn main:app --host 0.0.0.0 --port 8000 --workers 2
-
-# ─────────────────────────────────────────
-
-# PostgreSQL Database
-
-# ─────────────────────────────────────────
+  startCommand: uvicorn main:app --host 0.0.0.0 --port 8000
 
 * type: pserv
   name: ai-platform-db
