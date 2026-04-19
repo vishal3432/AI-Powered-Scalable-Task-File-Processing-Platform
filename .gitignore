@@ -1,0 +1,38 @@
+# Environment – never commit secrets
+.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# Django
+staticfiles/
+media/
+
+# FastAPI uploads
+fastapi_processor/uploads/
+
+# Database
+*.sqlite3
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.docker/
+
+# SSL certs
+nginx/ssl/
