@@ -1,6 +1,6 @@
 services:
 
-* type: web
+  type: web
   name: django-auth-service
   runtime: docker
   plan: standard
@@ -10,44 +10,44 @@ services:
 
   envVars:
 
-  * key: DJANGO_SECRET_KEY
+    key: DJANGO_SECRET_KEY
     sync: false
 
-  * key: DJANGO_DEBUG
+    key: DJANGO_DEBUG
     value: "False"
 
-  * key: DJANGO_ALLOWED_HOSTS
+    key: DJANGO_ALLOWED_HOSTS
     value: "*.onrender.com"
 
-  * key: POSTGRES_HOST
+    key: POSTGRES_HOST
     fromDatabase:
     name: ai-platform-db
     property: host
 
-  * key: POSTGRES_PORT
+    key: POSTGRES_PORT
     fromDatabase:
     name: ai-platform-db
     property: port
 
-  * key: POSTGRES_DB
+    key: POSTGRES_DB
     fromDatabase:
     name: ai-platform-db
     property: name
 
-  * key: POSTGRES_USER
+    key: POSTGRES_USER
     fromDatabase:
     name: ai-platform-db
     property: user
 
-  * key: POSTGRES_PASSWORD
+    key: POSTGRES_PASSWORD
     fromDatabase:
     name: ai-platform-db
     property: password
 
-  * key: JWT_SECRET_KEY
+    key: JWT_SECRET_KEY
     sync: false
 
-  * key: FASTAPI_BASE_URL
+    key: FASTAPI_BASE_URL
     value: "https://fastapi-processor-service.onrender.com"
 
   healthCheckPath: /auth/health/
@@ -58,7 +58,7 @@ services:
 
   startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:8000
 
-* type: web
+  type: web
   name: fastapi-processor-service
   runtime: docker
   plan: standard
@@ -68,46 +68,48 @@ services:
 
   envVars:
 
-  * key: POSTGRES_HOST
+    key: POSTGRES_HOST
     fromDatabase:
     name: ai-platform-db
     property: host
 
-  * key: POSTGRES_PORT
+    key: POSTGRES_PORT
     fromDatabase:
     name: ai-platform-db
     property: port
 
-  * key: POSTGRES_DB
+    key: POSTGRES_DB
     fromDatabase:
     name: ai-platform-db
     property: name
 
-  * key: POSTGRES_USER
+    key: POSTGRES_USER
     fromDatabase:
     name: ai-platform-db
     property: user
 
-  * key: POSTGRES_PASSWORD
+    key: POSTGRES_PASSWORD
     fromDatabase:
     name: ai-platform-db
     property: password
 
-  * key: JWT_SECRET_KEY
+    key: JWT_SECRET_KEY
     sync: false
 
-  * key: OPENAI_API_KEY
+    key: OPENAI_API_KEY
     sync: false
 
-  * key: DJANGO_BASE_URL
+    key: DJANGO_BASE_URL
     value: "https://django-auth-service.onrender.com"
 
   healthCheckPath: /health
 
-  buildCommand: pip install -r requirements.txt
+  buildCommand: |
+  pip install -r requirements.txt
+
   startCommand: uvicorn main:app --host 0.0.0.0 --port 8000
 
-* type: pserv
+  type: pserv
   name: ai-platform-db
   plan: starter
   env: postgres
