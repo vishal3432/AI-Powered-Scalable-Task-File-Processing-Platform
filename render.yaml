@@ -14,25 +14,15 @@ services:
       - key: DJANGO_ALLOWED_HOSTS
         value: "*.onrender.com,localhost"
       - key: POSTGRES_HOST
-        fromDatabase:
-          name: ai-platform-db
-          property: host
+        value: YOUR_DATABASE_HOST_HERE
       - key: POSTGRES_PORT
-        fromDatabase:
-          name: ai-platform-db
-          property: port
+        value: "5432"
       - key: POSTGRES_DB
-        fromDatabase:
-          name: ai-platform-db
-          property: database
+        value: ai_platform
       - key: POSTGRES_USER
-        fromDatabase:
-          name: ai-platform-db
-          property: user
+        value: postgres
       - key: POSTGRES_PASSWORD
-        fromDatabase:
-          name: ai-platform-db
-          property: password
+        value: CHANGE_ME_YOUR_DATABASE_PASSWORD
       - key: JWT_SECRET_KEY
         value: CHANGE_ME_RUN_openssl_rand_hex_50
       - key: CORS_ALLOWED_ORIGINS
@@ -42,30 +32,20 @@ services:
     name: fastapi-processor-service
     plan: free
     runtime: docker
-    repo: https://github.com/YOUR_USERNAME/YOUR_REPO_NAME
+    repo: https://github.com/vishal3432/AI-Powered-Scalable-Task-File-Processing-Platform
     rootDir: fastapi_processor
     dockerfilePath: Dockerfile
     envVars:
       - key: POSTGRES_HOST
-        fromDatabase:
-          name: ai-platform-db
-          property: host
+        value: YOUR_DATABASE_HOST_HERE
       - key: POSTGRES_PORT
-        fromDatabase:
-          name: ai-platform-db
-          property: port
+        value: "5432"
       - key: POSTGRES_DB
-        fromDatabase:
-          name: ai-platform-db
-          property: database
+        value: ai_platform
       - key: POSTGRES_USER
-        fromDatabase:
-          name: ai-platform-db
-          property: user
+        value: postgres
       - key: POSTGRES_PASSWORD
-        fromDatabase:
-          name: ai-platform-db
-          property: password
+        value: CHANGE_ME_YOUR_DATABASE_PASSWORD
       - key: JWT_SECRET_KEY
         value: CHANGE_ME_SAME_AS_DJANGO_JWT_SECRET_KEY
       - key: OPENAI_API_KEY
@@ -78,7 +58,3 @@ services:
         value: "10"
       - key: ENV
         value: "production"
-
-  - type: pserv
-    name: ai-platform-db
-    plan: free
