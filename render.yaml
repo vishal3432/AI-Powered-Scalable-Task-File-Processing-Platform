@@ -1,7 +1,4 @@
 services:
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Django Authentication Service
-  # ─────────────────────────────────────────────────────────────────────────────
   - type: web
     name: django-auth-service
     plan: free
@@ -40,14 +37,9 @@ services:
         value: CHANGE_ME_RUN_openssl_rand_hex_50
       - key: CORS_ALLOWED_ORIGINS
         value: "https://*.onrender.com,http://localhost:3000"
-    healthCheckPath: /auth/health/
-    healthCheckPollingInterval: 30
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
     startCommand: python manage.py migrate --noinput && gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 60
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # FastAPI Processing Service
-  # ─────────────────────────────────────────────────────────────────────────────
   - type: web
     name: fastapi-processor-service
     plan: free
@@ -88,17 +80,9 @@ services:
         value: "10"
       - key: ENV
         value: "production"
-    healthCheckPath: /health
-    healthCheckPollingInterval: 30
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port 8001 --workers 2
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # PostgreSQL Database
-  # ─────────────────────────────────────────────────────────────────────────────
   - type: pserv
     name: ai-platform-db
     plan: free
-    databaseName: ai_platform
-    databaseUser: postgres
-    ipAllowList: []
